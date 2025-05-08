@@ -9,6 +9,7 @@
     "doctrine/doctrine-bundle": "^2.13",
     "doctrine/orm": "^3.0",
     "doctrine/persistence": "^3.1 || ^4",
+    "knplabs/knp-menu": "^3.7",
     "nesbot/carbon": "^2.72 || ^3",
     "psr/log": "^3|^2|^1",
     "symfony/config": "^6.4",
@@ -21,10 +22,9 @@
     "tourze/doctrine-snowflake-bundle": "0.1.*",
     "tourze/doctrine-timestamp-bundle": "0.0.*",
     "tourze/doctrine-track-bundle": "0.1.*",
-    "tourze/easy-admin-attribute": "0.1.*",
     "tourze/easy-admin-menu-bundle": "0.1.*",
     "tourze/enum-extra": "~0.0.5",
-    "tourze/symfony-async-bundle": "0.0.*",
+    "tourze/symfony-ecol-bundle": "0.1.*",
     "yiisoft/arrays": "^3"
   },
   "require-dev": {
