@@ -2,7 +2,6 @@
 
 namespace CreditResourceBundle\MessageHandler;
 
-use AppBundle\Repository\BizUserRepository;
 use Carbon\Carbon;
 use CreditBundle\Exception\TransactionException;
 use CreditBundle\Service\AccountService;
@@ -13,13 +12,14 @@ use CreditResourceBundle\Message\CreateResourceBillMessage;
 use CreditResourceBundle\Repository\ResourcePriceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Uid\Uuid;
 
 class CreateResourceBillHandler
 {
     public function __construct(
-        private readonly BizUserRepository $bizUserRepository,
+        private readonly UserLoaderInterface $userLoader,
         private readonly ResourcePriceRepository $resourcePriceRepository,
         private readonly TransactionService $transactionService,
         private readonly EntityManagerInterface $entityManager,
@@ -31,7 +31,7 @@ class CreateResourceBillHandler
 
     public function __invoke(CreateResourceBillMessage $message): void
     {
-        $bizUser = $this->bizUserRepository->find($message->getBizUserId());
+        $bizUser = $this->userLoader->loadUserByIdentifier($message->getBizUserId());
         if (!$bizUser) {
             throw new UnrecoverableMessageHandlingException('找不到用户信息');
         }
