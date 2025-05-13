@@ -2,9 +2,9 @@
 
 namespace CreditResourceBundle\Command;
 
-use AppBundle\Entity\BizRole;
-use AppBundle\Repository\BizRoleRepository;
-use AppBundle\Repository\BizUserRepository;
+use BizUserBundle\Entity\BizRole;
+use BizUserBundle\Repository\BizRoleRepository;
+use BizUserBundle\Repository\BizUserRepository;
 use Carbon\Carbon;
 use CreditResourceBundle\Message\CreateResourceBillMessage;
 use CreditResourceBundle\Repository\ResourcePriceRepository;
