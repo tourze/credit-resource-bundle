@@ -2,6 +2,7 @@
 
 namespace CreditResourceBundle\MessageHandler;
 
+use Brick\Math\BigDecimal;
 use Carbon\Carbon;
 use CreditBundle\Exception\TransactionException;
 use CreditBundle\Service\AccountService;
@@ -208,7 +209,8 @@ class CreateResourceBillHandler
         // 开始计费
         // TODO 暂时没账单，我们直接扣除系统用户的预储值；
 
-        $money = bcmul($amount, $resourcePrice->getPrice(), 5); // 5位小数
+        // 5位小数
+        $money = BigDecimal::of($amount)->multipliedBy($resourcePrice->getPrice())->toScale(5);
         try {
             // 我们在这里没做余额校验，意思就是等他超出余额
             $this->transactionService->decrease(
