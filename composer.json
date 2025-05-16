@@ -19,6 +19,7 @@
     "symfony/doctrine-bridge": "^6.4",
     "symfony/http-kernel": "^6.4",
     "symfony/messenger": "^6.4",
+    "symfony/security-core": "^6.4",
     "symfony/uid": "^6.4",
     "tourze/biz-user-bundle": "0.0.*",
     "tourze/bundle-dependency": "0.0.*",
