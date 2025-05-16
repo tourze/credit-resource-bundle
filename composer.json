@@ -21,6 +21,7 @@
     "symfony/uid": "^6.4",
     "tourze/biz-user-bundle": "0.0.*",
     "tourze/bundle-dependency": "0.0.*",
+    "tourze/credit-bundle": "0.0.*",
     "tourze/doctrine-indexed-bundle": "0.0.*",
     "tourze/doctrine-snowflake-bundle": "0.1.*",
     "tourze/doctrine-timestamp-bundle": "0.0.*",
