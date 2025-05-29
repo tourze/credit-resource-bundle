@@ -31,7 +31,7 @@
     "tourze/doctrine-user-bundle": "0.0.*",
     "tourze/easy-admin-attribute": "0.1.*",
     "tourze/easy-admin-menu-bundle": "0.1.*",
-    "tourze/enum-extra": "~0.0.5",
+    "tourze/enum-extra": "0.1.*",
     "tourze/symfony-async-bundle": "0.0.*",
     "tourze/symfony-cron-job-bundle": "0.1.*",
     "yiisoft/arrays": "^3"
