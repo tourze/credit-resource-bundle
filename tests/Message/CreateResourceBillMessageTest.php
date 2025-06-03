@@ -4,7 +4,7 @@ namespace CreditResourceBundle\Tests\Message;
 
 use CreditResourceBundle\Message\CreateResourceBillMessage;
 use PHPUnit\Framework\TestCase;
-use Tourze\Symfony\Async\Message\AsyncMessageInterface;
+use Tourze\AsyncContracts\AsyncMessageInterface;
 
 class CreateResourceBillMessageTest extends TestCase
 {
