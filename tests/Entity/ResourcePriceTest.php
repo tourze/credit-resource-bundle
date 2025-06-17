@@ -5,7 +5,7 @@ namespace CreditResourceBundle\Tests\Entity;
 use CreditBundle\Entity\Currency;
 use CreditResourceBundle\Entity\ResourcePrice;
 use CreditResourceBundle\Enum\FeeCycle;
-use DateTime;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 class ResourcePriceTest extends TestCase
@@ -31,7 +31,7 @@ class ResourcePriceTest extends TestCase
      */
     public function testCreateTimeAccessors(): void
     {
-        $dateTime = new DateTime();
+        $dateTime = new DateTimeImmutable();
         
         $this->resourcePrice->setCreateTime($dateTime);
         $this->assertSame($dateTime, $this->resourcePrice->getCreateTime());
@@ -45,7 +45,7 @@ class ResourcePriceTest extends TestCase
      */
     public function testUpdateTimeAccessors(): void
     {
-        $dateTime = new DateTime();
+        $dateTime = new DateTimeImmutable();
         
         $this->resourcePrice->setUpdateTime($dateTime);
         $this->assertSame($dateTime, $this->resourcePrice->getUpdateTime());
