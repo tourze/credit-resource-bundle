@@ -52,5 +52,4 @@ class FeeCycleTest extends TestCase
         $this->assertSame('按小时新增', FeeCycle::NEW_BY_HOUR->getLabel());
     }
 
-    
 } 

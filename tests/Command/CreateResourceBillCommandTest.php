@@ -69,9 +69,7 @@ class CreateResourceBillCommandTest extends TestCase
         $this->assertStringContainsString('没有可以收费的角色，跳过处理', $this->commandTester->getDisplay());
         $this->assertEquals(1, $this->commandTester->getStatusCode()); // FAILURE
     }
-    
-    
-    
+
     /**
      * 测试命令 cron 任务设置
      */

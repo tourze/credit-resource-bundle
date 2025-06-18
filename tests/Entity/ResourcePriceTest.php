@@ -291,6 +291,5 @@ class ResourcePriceTest extends TestCase
         $this->assertSame($bottomPrice, $this->resourcePrice->getBottomPrice());
         $this->assertSame($remark, $this->resourcePrice->getRemark());
     }
-    
-    
+
 } 
