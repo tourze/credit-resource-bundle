@@ -13,31 +13,16 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\Creatable;
-use Tourze\EasyAdmin\Attribute\Action\Deletable;
-use Tourze\EasyAdmin\Attribute\Action\Editable;
-use Tourze\EasyAdmin\Attribute\Column\BoolColumn;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Field\FormField;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
 /**
  * 在创建资源价格配置时，我们为他配置角色，意思是只有这个角色的用户，才需要计算账单
  */
-#[AsPermission(title: '资源价格')]
-#[Deletable]
-#[Editable]
-#[Creatable]
 #[ORM\Entity(repositoryClass: ResourcePriceRepository::class)]
 #[ORM\Table(name: 'credit_resource_price', options: ['comment' => '资源价格'])]
 class ResourcePrice
 {
     use TimestampableAware;
 
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -52,60 +37,41 @@ class ResourcePrice
     #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
     private ?string $updatedBy = null;
 
-    #[BoolColumn]
     #[IndexColumn]
     #[TrackColumn]
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '有效', 'default' => 0])]
-    #[ListColumn(order: 97)]
-    #[FormField(order: 97)]
     private ?bool $valid = false;
 
     #[TrackColumn]
-    #[ListColumn]
-    #[FormField(span: 12)]
     #[ORM\Column(length: 200, options: ['comment' => '资源名称'])]
     private ?string $title = null;
 
     #[TrackColumn]
-    #[ListColumn]
-    #[FormField(span: 8)]
     #[ORM\Column(length: 30, enumType: FeeCycle::class, options: ['comment' => '计费周期'])]
     private ?FeeCycle $cycle = null;
 
     #[TrackColumn]
-    #[ListColumn]
-    #[FormField(span: 8)]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '起始计费数量'])]
     private ?int $minAmount = null;
 
     #[TrackColumn]
-    #[ListColumn]
-    #[FormField(span: 8)]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '最大计费数量'])]
     private ?int $maxAmount = null;
 
     #[TrackColumn]
-    #[ListColumn(title: '币种')]
-    #[FormField(title: '币种', span: 6)]
     #[ORM\ManyToOne(targetEntity: Currency::class)]
     #[ORM\JoinColumn(nullable: false, options: ['comment' => '币种'])]
     private ?Currency $currency = null;
 
     #[TrackColumn]
-    #[ListColumn]
-    #[FormField(span: 6)]
     #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 5, options: ['comment' => '单价'])]
     private ?string $price = null;
 
     #[TrackColumn]
-    #[ListColumn]
-    #[FormField(span: 6)]
     #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 5, nullable: true, options: ['comment' => '封顶价格'])]
     private ?string $topPrice = null;
 
     #[TrackColumn]
-    #[ListColumn]
-    #[FormField(span: 6)]
     #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 5, nullable: true, options: ['comment' => '保底价格'])]
     private ?string $bottomPrice = null;
 
@@ -113,12 +79,9 @@ class ResourcePrice
      * @var string|null 这个资源ID填写实体类名
      */
     #[TrackColumn]
-    #[Filterable]
-    #[FormField]
     #[ORM\Column(length: 1000, options: ['comment' => '资源ID'])]
     private ?string $resource = null;
 
-    #[FormField]
     #[TrackColumn]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '备注'])]
     private ?string $remark = null;
