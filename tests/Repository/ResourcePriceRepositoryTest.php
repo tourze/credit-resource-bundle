@@ -13,10 +13,11 @@ class ResourcePriceRepositoryTest extends TestCase
      */
     public function testRepositoryInheritance(): void
     {
-        $this->assertTrue(is_subclass_of(
-            ResourcePriceRepository::class,
-            ServiceEntityRepository::class
-        ));
+        $reflectionClass = new \ReflectionClass(ResourcePriceRepository::class);
+        $parentClass = $reflectionClass->getParentClass();
+        
+        $this->assertNotFalse($parentClass);
+        $this->assertEquals(ServiceEntityRepository::class, $parentClass->getName());
     }
     
     /**

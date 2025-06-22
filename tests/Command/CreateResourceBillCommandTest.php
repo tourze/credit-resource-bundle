@@ -3,9 +3,9 @@
 namespace CreditResourceBundle\Tests\Command;
 
 use BizUserBundle\Repository\BizRoleRepository;
-use BizUserBundle\Repository\BizUserRepository;
 use CreditResourceBundle\Command\CreateResourceBillCommand;
 use CreditResourceBundle\Repository\ResourcePriceRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -16,20 +16,20 @@ class CreateResourceBillCommandTest extends TestCase
     private CommandTester $commandTester;
     private ResourcePriceRepository $resourcePriceRepository;
     private BizRoleRepository $roleRepository;
-    private BizUserRepository $userRepository;
+    private EntityManagerInterface $entityManager;
     private MessageBusInterface $messageBus;
     
     protected function setUp(): void
     {
         $this->resourcePriceRepository = $this->createMock(ResourcePriceRepository::class);
         $this->roleRepository = $this->createMock(BizRoleRepository::class);
-        $this->userRepository = $this->createMock(BizUserRepository::class);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         
         $this->command = new CreateResourceBillCommand(
             $this->resourcePriceRepository,
             $this->roleRepository,
-            $this->userRepository,
+            $this->entityManager,
             $this->messageBus
         );
         

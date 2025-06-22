@@ -11,17 +11,17 @@ use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 /**
  * 在创建资源价格配置时，我们为他配置角色，意思是只有这个角色的用户，才需要计算账单
  */
 #[ORM\Entity(repositoryClass: ResourcePriceRepository::class)]
 #[ORM\Table(name: 'credit_resource_price', options: ['comment' => '资源价格'])]
-class ResourcePrice
+class ResourcePrice implements \Stringable
 {
     use TimestampableAware;
+    use BlameableAware;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -29,13 +29,6 @@ class ResourcePrice
     #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
     private ?string $id = null;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
 
     #[IndexColumn]
     #[TrackColumn]
@@ -91,29 +84,6 @@ class ResourcePrice
         return $this->id;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
 
     public function isValid(): ?bool
     {
@@ -245,5 +215,10 @@ class ResourcePrice
         $this->remark = $remark;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->title ?? '';
     }
 }

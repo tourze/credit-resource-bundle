@@ -3,7 +3,7 @@
 namespace CreditResourceBundle\MessageHandler;
 
 use Brick\Math\BigDecimal;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use CreditBundle\Exception\TransactionException;
 use CreditBundle\Service\AccountService;
 use CreditBundle\Service\CurrencyService;
@@ -33,12 +33,12 @@ class CreateResourceBillHandler
     public function __invoke(CreateResourceBillMessage $message): void
     {
         $bizUser = $this->userLoader->loadUserByIdentifier($message->getBizUserId());
-        if (!$bizUser) {
+        if ($bizUser === null) {
             throw new UnrecoverableMessageHandlingException('找不到用户信息');
         }
 
         $resourcePrice = $this->resourcePriceRepository->find($message->getResourcePriceId());
-        if (!$resourcePrice) {
+        if ($resourcePrice === null) {
             throw new UnrecoverableMessageHandlingException('找不到价格信息');
         }
 
@@ -54,7 +54,7 @@ class CreateResourceBillHandler
 
         // TODO 这里要查找出这个计费计划关联到的所有用户，通过角色关联？
 
-        $time = Carbon::createFromTimeString($message->getTime());
+        $time = CarbonImmutable::createFromTimeString($message->getTime());
         $repo = $this->entityManager->getRepository($resourcePrice->getResource());
         $amount = 0;
 
@@ -77,8 +77,8 @@ class CreateResourceBillHandler
                     return;
                 }
 
-                $startTime = $time->clone()->subYear()->startOfYear();
-                $endTime = $startTime->clone()->endOfYear();
+                $startTime = $time->subYear()->startOfYear();
+                $endTime = $startTime->endOfYear();
                 $amount = (int) $repo
                     ->createQueryBuilder('a')
                     ->select('COUNT(a.id)')
@@ -108,8 +108,8 @@ class CreateResourceBillHandler
                 }
 
                 // 这里特地没有 subMonth，是因为月份的操作，有一个 overflow 的问题
-                $startTime = $time->clone()->subDay()->startOfMonth();
-                $endTime = $startTime->clone()->endOfMonth();
+                $startTime = $time->subDay()->startOfMonth();
+                $endTime = $startTime->endOfMonth();
                 $amount = (int) $repo
                     ->createQueryBuilder('a')
                     ->select('COUNT(a.id)')
@@ -138,8 +138,8 @@ class CreateResourceBillHandler
                     return;
                 }
 
-                $startTime = $time->clone()->subDay()->startOfDay();
-                $endTime = $startTime->clone()->endOfDay();
+                $startTime = $time->subDay()->startOfDay();
+                $endTime = $startTime->endOfDay();
                 $amount = (int) $repo
                     ->createQueryBuilder('a')
                     ->select('COUNT(a.id)')
@@ -168,8 +168,8 @@ class CreateResourceBillHandler
                     return;
                 }
 
-                $startTime = $time->clone()->subHour()->startOfHour();
-                $endTime = $startTime->clone()->endOfHour();
+                $startTime = $time->subHour()->startOfHour();
+                $endTime = $startTime->endOfHour();
                 $amount = (int) $repo
                     ->createQueryBuilder('a')
                     ->select('COUNT(a.id)')
@@ -201,7 +201,7 @@ class CreateResourceBillHandler
         }
 
         $currency = $resourcePrice->getCurrency();
-        if (!$currency) {
+        if ($currency === null) {
             $currency = $this->currencyService->ensureCurrencyByCode('CNY', '余额');
         }
         $account = $this->accountService->getAccountByUser($bizUser, $currency);
@@ -216,7 +216,7 @@ class CreateResourceBillHandler
             $this->transactionService->decrease(
                 'BILL-' . $resourcePrice->getId() . '-' . Uuid::v4()->toRfc4122(),
                 $account,
-                $money,
+                (float) $money->__toString(),
             );
         } catch (TransactionException $e) {
             $this->logger->error('计算资源账单时发生异常', [
