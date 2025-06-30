@@ -31,7 +31,7 @@ class ResourcePriceRepositoryTest extends TestCase
         $this->assertNotFalse($docComment);
         
         // 通过正则表达式查找 @method 注释中的实体类
-        preg_match_all('/@method\s+(\S+)/', $docComment ?: '', $matches);
+        preg_match_all('/@method\s+(\S+)/', $docComment, $matches);
         
         $hasResourcePriceEntity = false;
         foreach ($matches[1] as $match) {

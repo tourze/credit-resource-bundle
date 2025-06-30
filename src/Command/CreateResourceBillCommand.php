@@ -19,7 +19,7 @@ use Yiisoft\Arrays\ArrayHelper;
 /**
  * 我们每小时执行一次
  */
-#[AsCronTask('1 * * * *')]
+#[AsCronTask(expression: '1 * * * *')]
 #[AsCommand(name: self::NAME, description: '创建付费账单并扣费')]
 class CreateResourceBillCommand extends Command
 {

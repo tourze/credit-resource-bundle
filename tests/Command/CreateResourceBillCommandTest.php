@@ -84,7 +84,8 @@ class CreateResourceBillCommandTest extends TestCase
         foreach ($attributes as $attribute) {
             if ($attribute->getName() === 'Tourze\Symfony\CronJob\Attribute\AsCronTask') {
                 $hasCronAttribute = true;
-                $cronExpression = $attribute->getArguments()[0];
+                $args = $attribute->getArguments();
+                $cronExpression = $args['expression'] ?? $args[0] ?? null;
                 break;
             }
         }
