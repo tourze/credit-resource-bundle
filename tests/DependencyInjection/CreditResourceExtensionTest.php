@@ -3,25 +3,30 @@
 namespace CreditResourceBundle\Tests\DependencyInjection;
 
 use CreditResourceBundle\DependencyInjection\CreditResourceExtension;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Tourze\PHPUnitSymfonyUnitTest\AbstractDependencyInjectionExtensionTestCase;
 
-class CreditResourceExtensionTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(CreditResourceExtension::class)]
+final class CreditResourceExtensionTest extends AbstractDependencyInjectionExtensionTestCase
 {
-    public function testLoadRegistersServices(): void
+    private CreditResourceExtension $extension;
+
+    private ContainerBuilder $container;
+
+    protected function setUp(): void
     {
-        $container = new ContainerBuilder();
-        $extension = new CreditResourceExtension();
-        
-        $extension->load([], $container);
-        
-        // 验证扩展加载了配置
-        $this->assertNotEmpty($container->getDefinitions());
+        parent::setUp();
+        $this->extension = new CreditResourceExtension();
+        $this->container = new ContainerBuilder();
+        $this->container->setParameter('kernel.environment', 'test');
     }
-    
+
     public function testGetAlias(): void
     {
-        $extension = new CreditResourceExtension();
-        $this->assertEquals('credit_resource', $extension->getAlias());
+        $this->assertEquals('credit_resource', $this->extension->getAlias());
     }
 }

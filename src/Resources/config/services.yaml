@@ -7,9 +7,27 @@ services:
   CreditResourceBundle\AdminMenu: ~
 
   # 如果确认要使用自动扫描、自动注册，建议尽可能将要扫描的目录路径收缩，不要设置那么大的范围
+  CreditResourceBundle\Controller\:
+    resource: '../../Controller/'
   CreditResourceBundle\Command\:
     resource: '../../Command/'
   CreditResourceBundle\MessageHandler\:
     resource: '../../MessageHandler/'
   CreditResourceBundle\Repository\:
     resource: '../../Repository/'
+  
+  # 服务层
+  CreditResourceBundle\Service\:
+    resource: '../../Service/'
+  
+  # 资源使用量提供者
+  CreditResourceBundle\Provider\:
+    resource: '../../Provider/'
+    tags:
+      - { name: 'credit_resource.usage_provider' }
+  
+  # 计费策略
+  CreditResourceBundle\Strategy\:
+    resource: '../../Strategy/'
+    tags:
+      - { name: 'credit_resource.billing_strategy' }

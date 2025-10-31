@@ -1,0 +1,10 @@
+services:
+  # 为测试环境创建一个 NullLogger
+  test.null_logger:
+    class: Psr\Log\NullLogger
+
+  # 覆盖 TimeListener 的 logger
+  Tourze\DoctrineTimestampBundle\EventSubscriber\TimeListener:
+    arguments:
+      $propertyAccessor: '@doctrine-timestamp.property-accessor'
+      $logger: '@test.null_logger'

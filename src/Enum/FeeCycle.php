@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CreditResourceBundle\Enum;
 
 use Tourze\EnumExtra\Itemable;
