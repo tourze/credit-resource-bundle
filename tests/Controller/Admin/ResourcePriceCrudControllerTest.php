@@ -49,8 +49,7 @@ final class ResourcePriceCrudControllerTest extends AbstractEasyAdminControllerT
 
     public function testIndexPage(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
         $crawler = $client->request('GET', '/admin');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
@@ -197,8 +196,7 @@ final class ResourcePriceCrudControllerTest extends AbstractEasyAdminControllerT
 
     public function testValidationErrors(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 访问新建页面（如果 NEW 操作启用）
         try {
@@ -263,8 +261,7 @@ final class ResourcePriceCrudControllerTest extends AbstractEasyAdminControllerT
      */
     public function testEditPagePrefillsExistingDataCustom(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         try {
             $crawler = $client->request('GET', $this->generateAdminUrl('index'));
