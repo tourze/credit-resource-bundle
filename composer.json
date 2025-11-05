@@ -31,7 +31,7 @@
     "tourze/async-contracts": "1.0.*",
     "tourze/biz-user-bundle": "0.0.*",
     "tourze/bundle-dependency": "1.*",
-    "tourze/credit-bundle": "0.0.*",
+    "tourze/credit-bundle": "1.0.*",
     "tourze/doctrine-indexed-bundle": "1.0.*",
     "tourze/doctrine-snowflake-bundle": "1.0.*",
     "tourze/doctrine-timestamp-bundle": "1.0.*",
