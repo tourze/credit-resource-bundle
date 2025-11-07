@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CreditResourceBundle\Tests\Controller\Admin;
 
-use BizUserBundle\Entity\BizUser;
 use CreditResourceBundle\Controller\Admin\ResourceBillCrudController;
 use CreditResourceBundle\Entity\ResourceBill;
 use CreditResourceBundle\Enum\BillStatus;
@@ -14,9 +13,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Tourze\BizRoleBundle\Repository\BizRoleRepository;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 
 /**
@@ -34,50 +30,6 @@ final class ResourceBillCrudControllerTest extends AbstractEasyAdminControllerTe
     protected function getControllerService(): AbstractCrudController&ResourceBillCrudController
     {
         return self::getService(ResourceBillCrudController::class);
-    }
-
-    /**
-     * 覆盖父类方法，创建具有ROLE_SUPER_ADMIN权限的管理员用户
-     * ResourceBillCrudController要求ROLE_SUPER_ADMIN权限
-     */
-    protected function createAdminUser(string $username = 'admin', string $password = 'password'): UserInterface
-    {
-        $em = self::getEntityManager();
-
-        // 尝试查找已存在的用户
-        $user = $em->getRepository(BizUser::class)->findOneBy(['username' => $username]);
-
-        if ($user instanceof BizUser) {
-            return $user;
-        }
-
-        // 创建新用户
-        $user = new BizUser();
-        $user->setUsername($username);
-        $user->setValid(true);
-
-        // 设置密码
-        $passwordHasher = self::getService(UserPasswordHasherInterface::class);
-        self::assertInstanceOf(UserPasswordHasherInterface::class, $passwordHasher);
-        $user->setPasswordHash($passwordHasher->hashPassword($user, $password));
-
-        // 添加ROLE_ADMIN和ROLE_SUPER_ADMIN角色
-        // 注意：ROLE_SUPER_ADMIN用户也需要ROLE_ADMIN作为基础角色
-        $roleRepository = self::getService(BizRoleRepository::class);
-        self::assertInstanceOf(BizRoleRepository::class, $roleRepository);
-        $user->addAssignRole($roleRepository->findOrCreate('ROLE_ADMIN'));
-        $user->addAssignRole($roleRepository->findOrCreate('ROLE_SUPER_ADMIN'));
-
-        // 如果用户名是邮箱格式，也设置邮箱
-        if (false !== filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            $user->setEmail($username);
-        }
-
-        // 保存用户
-        $em->persist($user);
-        $em->flush();
-
-        return $user;
     }
 
     public static function provideIndexPageHeaders(): iterable
