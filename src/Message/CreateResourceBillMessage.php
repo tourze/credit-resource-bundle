@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CreditResourceBundle\Message;
 
 use Tourze\AsyncContracts\AsyncMessageInterface;
 
-class CreateResourceBillMessage implements AsyncMessageInterface
+final class CreateResourceBillMessage implements AsyncMessageInterface
 {
     private string $bizUserId;
 

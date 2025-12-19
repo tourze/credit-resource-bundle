@@ -16,7 +16,7 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 
 #[AsMessageHandler]
 #[WithMonologChannel(channel: 'credit_resource')]
-readonly class CreateResourceBillHandler
+final readonly class CreateResourceBillHandler
 {
     public function __construct(
         private UserLoaderInterface $userLoader,

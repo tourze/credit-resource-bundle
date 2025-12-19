@@ -1,12 +1,12 @@
 services:
-  # default configuration for services in *this* file
   _defaults:
-    autowire: true      # Automatically injects dependencies in your services.
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    autowire: true
+    autoconfigure: true
+    public: false
 
-  CreditResourceBundle\AdminMenu: ~
+  CreditResourceBundle\AdminMenu:
+    public: true
 
-  # 如果确认要使用自动扫描、自动注册，建议尽可能将要扫描的目录路径收缩，不要设置那么大的范围
   CreditResourceBundle\Controller\:
     resource: '../../Controller/'
   CreditResourceBundle\Command\:
@@ -15,18 +15,14 @@ services:
     resource: '../../MessageHandler/'
   CreditResourceBundle\Repository\:
     resource: '../../Repository/'
-  
-  # 服务层
   CreditResourceBundle\Service\:
     resource: '../../Service/'
-  
-  # 资源使用量提供者
+    public: true
   CreditResourceBundle\Provider\:
     resource: '../../Provider/'
+    public: true
     tags:
       - { name: 'credit_resource.usage_provider' }
-  
-  # 计费策略
   CreditResourceBundle\Strategy\:
     resource: '../../Strategy/'
     tags:

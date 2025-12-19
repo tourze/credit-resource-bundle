@@ -25,6 +25,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\NumericFilter;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[AdminCrud(
     routePath: '/credit-resource/resource-price',
@@ -211,10 +212,24 @@ final class ResourcePriceCrudController extends AbstractCrudController
 
         yield AssociationField::new('createdBy', '创建者')
             ->onlyOnDetail()
+            ->formatValue(function ($value, $entity) {
+                if ($value instanceof UserInterface) {
+                    return $value->getUserIdentifier();
+                }
+
+                return $value;
+            })
         ;
 
         yield AssociationField::new('updatedBy', '更新者')
             ->onlyOnDetail()
+            ->formatValue(function ($value, $entity) {
+                if ($value instanceof UserInterface) {
+                    return $value->getUserIdentifier();
+                }
+
+                return $value;
+            })
         ;
     }
 

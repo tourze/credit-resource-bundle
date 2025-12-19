@@ -24,6 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[AdminCrud(
     routePath: '/credit-resource/resource-bill',
@@ -58,8 +59,8 @@ final class ResourceBillCrudController extends AbstractCrudController
             // 禁用新建操作，账单应该通过系统自动生成
             ->disable(Action::NEW)
             // 只允许查看和编辑状态相关字段
-            ->setPermission(Action::EDIT, 'ROLE_SUPER_ADMIN')
-            ->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN')
+            ->setPermission(Action::EDIT, 'ROLE_ADMIN')
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
         ;
     }
 
@@ -72,19 +73,23 @@ final class ResourceBillCrudController extends AbstractCrudController
 
         // 关联字段
         yield AssociationField::new('user', '用户')
-            ->autocomplete()
             ->setRequired(true)
             ->setHelp('选择需要计费的用户')
+            ->formatValue(function ($value, $entity) {
+                if ($value instanceof UserInterface) {
+                    return $value->getUserIdentifier();
+                }
+
+                return $value;
+            })
         ;
 
         yield AssociationField::new('resourcePrice', '资源价格配置')
-            ->autocomplete()
             ->setRequired(true)
             ->setHelp('选择对应的资源价格配置')
         ;
 
         yield AssociationField::new('account', '扣费账户')
-            ->autocomplete()
             ->setRequired(true)
             ->setHelp('选择用于扣费的账户')
         ;
@@ -158,7 +163,6 @@ final class ResourceBillCrudController extends AbstractCrudController
 
         // 关联交易记录
         yield AssociationField::new('transaction', '关联交易记录')
-            ->autocomplete()
             ->setHelp('关联的积分交易记录')
             ->hideOnIndex()
         ;
@@ -192,10 +196,24 @@ final class ResourceBillCrudController extends AbstractCrudController
         if (Crud::PAGE_DETAIL === $pageName) {
             yield AssociationField::new('createBy', '创建者')
                 ->setHelp('创建此账单记录的用户')
+                ->formatValue(function ($value, $entity) {
+                    if ($value instanceof UserInterface) {
+                        return $value->getUserIdentifier();
+                    }
+
+                    return $value;
+                })
             ;
 
             yield AssociationField::new('updateBy', '更新者')
                 ->setHelp('最后更新此账单记录的用户')
+                ->formatValue(function ($value, $entity) {
+                    if ($value instanceof UserInterface) {
+                        return $value->getUserIdentifier();
+                    }
+
+                    return $value;
+                })
             ;
         }
     }

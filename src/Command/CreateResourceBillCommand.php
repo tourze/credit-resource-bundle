@@ -24,7 +24,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  */
 #[AsCronTask(expression: '1 * * * *')]
 #[AsCommand(name: self::NAME, description: '创建付费账单并扣费')]
-class CreateResourceBillCommand extends Command
+final class CreateResourceBillCommand extends Command
 {
     public const NAME = 'billing:create-resource-bill';
 

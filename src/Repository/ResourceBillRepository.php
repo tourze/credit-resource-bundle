@@ -15,7 +15,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<ResourceBill>
  */
 #[AsRepository(entityClass: ResourceBill::class)]
-class ResourceBillRepository extends ServiceEntityRepository
+final class ResourceBillRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

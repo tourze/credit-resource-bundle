@@ -8,8 +8,9 @@ use Carbon\CarbonImmutable;
 use CreditResourceBundle\Entity\ResourceBill;
 use CreditResourceBundle\Entity\ResourcePrice;
 use CreditResourceBundle\Enum\BillStatus;
+use CreditResourceBundle\Enum\FeeCycle;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 
 /**
@@ -23,49 +24,28 @@ final class ResourceBillTest extends AbstractEntityTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->bill = new ResourceBill();
     }
 
-    /**
-     * 创建UserInterface的简单stub实现
-     *
-     * @param non-empty-string $userIdentifier 用户标识符，默认为'test-user'
-     * @param array<string> $roles 用户角色数组，默认为空数组
-     */
-    private function createUserStub(string $userIdentifier = 'test-user', array $roles = []): UserInterface
-    {
-        return new class($userIdentifier, $roles) implements UserInterface {
-            /**
-             * @param non-empty-string $userIdentifier
-             * @param array<string> $roles
-             */
-            public function __construct(
-                private readonly string $userIdentifier,
-                private readonly array $roles = [],
-            ) {
-            }
-
-            public function getRoles(): array
-            {
-                return $this->roles;
-            }
-
-            public function eraseCredentials(): void
-            {
-                // nothing to do here
-            }
-
-            public function getUserIdentifier(): string
-            {
-                return $this->userIdentifier;
-            }
-        };
-    }
-
-    protected function createEntity(): ResourceBill
+    protected function createEntity(): object
     {
         return new ResourceBill();
+    }
+
+    /**
+     * 创建真实的 ResourcePrice 实体
+     */
+    private function createResourcePrice(string $title = 'Test Resource'): ResourcePrice
+    {
+        $resourcePrice = new ResourcePrice();
+        $resourcePrice->setTitle($title);
+        $resourcePrice->setCycle(FeeCycle::TOTAL_BY_MONTH);
+        $resourcePrice->setMinAmount(0);
+        $resourcePrice->setCurrency('CNY');
+        $resourcePrice->setPrice('2.00000');
+        $resourcePrice->setResource('test_resource');
+
+        return $resourcePrice;
     }
 
     /**
@@ -104,12 +84,8 @@ final class ResourceBillTest extends AbstractEntityTestCase
 
     public function testSettersAndGetters(): void
     {
-        $user = $this->createUserStub();
-        // 使用具体类ResourcePrice是因为：
-        // 1. 这是业务实体类，是领域模型的核心组件
-        // 2. 测试需要验证实体间的关联关系
-        // 3. 实体类的接口稳定，适合单元测试
-        $resourcePrice = $this->createMock(ResourcePrice::class);
+        $user = new InMemoryUser('test-user', null);
+        $resourcePrice = $this->createResourcePrice();
         $billTime = CarbonImmutable::parse('2023-04-01 00:00:00');
         $periodStart = CarbonImmutable::parse('2023-04-01 00:00:00');
         $periodEnd = CarbonImmutable::parse('2023-04-30 23:59:59');
@@ -170,13 +146,7 @@ final class ResourceBillTest extends AbstractEntityTestCase
 
     public function testToString(): void
     {
-        // 使用具体类ResourcePrice是因为：
-        // 1. 这是业务实体类，是领域模型的核心组件
-        // 2. 测试需要验证实体间的关联关系
-        // 3. 实体类的接口稳定，适合单元测试
-        $resourcePrice = $this->createMock(ResourcePrice::class);
-        $resourcePrice->method('getTitle')->willReturn('Test Resource');
-
+        $resourcePrice = $this->createResourcePrice('Test Resource');
         $billTime = CarbonImmutable::parse('2023-04-01 12:00:00');
 
         $this->bill->setResourcePrice($resourcePrice);

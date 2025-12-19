@@ -178,7 +178,6 @@ final class TieredPriceStrategyTest extends TestCase
     public function testValidateConfigurationWithInvalidRule(): void
     {
         $price = $this->createResourcePrice();
-        // @phpstan-ignore-next-line
         $price->setPriceRules([
             'invalid_rule',
         ]);

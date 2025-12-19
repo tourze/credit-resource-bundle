@@ -8,63 +8,32 @@ use CreditResourceBundle\Exception\ProviderNotFoundException;
 use CreditResourceBundle\Interface\ResourceUsageProviderInterface;
 use CreditResourceBundle\Service\ResourceUsageService;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 
 /**
  * @internal
  */
 #[CoversClass(ResourceUsageService::class)]
-final class ResourceUsageServiceTest extends TestCase
+#[RunTestsInSeparateProcesses]
+final class ResourceUsageServiceTest extends AbstractIntegrationTestCase
 {
-    private ResourceUsageService $resourceUsageService;
+    private ResourceUsageService $service;
 
-    protected function setUp(): void
+    private UserInterface $testUser;
+
+    protected function onSetUp(): void
     {
-        parent::setUp();
+        $this->service = self::getContainer()->get(ResourceUsageService::class);
 
-        $this->resourceUsageService = new ResourceUsageService([]);
-    }
-
-    /**
-     * 创建UserInterface的简单stub实现
-     *
-     * @param non-empty-string $userIdentifier 用户标识符，默认为'test-user'
-     * @param array<string> $roles 用户角色数组，默认为空数组
-     */
-    private function createUserStub(string $userIdentifier = 'test-user', array $roles = []): UserInterface
-    {
-        return new class($userIdentifier, $roles) implements UserInterface {
-            /**
-             * @param non-empty-string $userIdentifier
-             * @param array<string> $roles
-             */
-            public function __construct(
-                private readonly string $userIdentifier,
-                private readonly array $roles = [],
-            ) {
-            }
-
-            public function getRoles(): array
-            {
-                return $this->roles;
-            }
-
-            public function eraseCredentials(): void
-            {
-                // nothing to do here
-            }
-
-            public function getUserIdentifier(): string
-            {
-                return $this->userIdentifier;
-            }
-        };
+        // 使用 InMemoryUser 作为测试用户
+        $this->testUser = new InMemoryUser('test-user', null, ['ROLE_USER']);
     }
 
     public function testGetUsageWithValidProvider(): void
     {
-        $user = $this->createUserStub();
         $resourceType = 'test_resource';
         $start = new \DateTimeImmutable('-1 day');
         $end = new \DateTimeImmutable();
@@ -92,16 +61,15 @@ final class ResourceUsageServiceTest extends TestCase
             }
         };
 
-        $this->resourceUsageService->addProvider($testProvider);
+        $this->service->addProvider($testProvider);
 
-        $usage = $this->resourceUsageService->getUsage($user, $resourceType, $start, $end);
+        $usage = $this->service->getUsage($this->testUser, $resourceType, $start, $end);
 
         $this->assertEquals(100, $usage);
     }
 
     public function testGetUsageWithInvalidProviderThrowsException(): void
     {
-        $user = $this->createUserStub();
         $resourceType = 'nonexistent_resource';
         $start = new \DateTimeImmutable('-1 day');
         $end = new \DateTimeImmutable();
@@ -109,12 +77,11 @@ final class ResourceUsageServiceTest extends TestCase
         $this->expectException(ProviderNotFoundException::class);
         $this->expectExceptionMessage('没有找到支持资源类型 "nonexistent_resource" 的使用量提供者');
 
-        $this->resourceUsageService->getUsage($user, $resourceType, $start, $end);
+        $this->service->getUsage($this->testUser, $resourceType, $start, $end);
     }
 
     public function testGetUsageDetailsWithValidProvider(): void
     {
-        $user = $this->createUserStub();
         $resourceType = 'test_resource';
         $start = new \DateTimeImmutable('-1 day');
         $end = new \DateTimeImmutable();
@@ -146,9 +113,9 @@ final class ResourceUsageServiceTest extends TestCase
             }
         };
 
-        $this->resourceUsageService->addProvider($testProvider);
+        $this->service->addProvider($testProvider);
 
-        $details = $this->resourceUsageService->getUsageDetails($user, $resourceType, $start, $end);
+        $details = $this->service->getUsageDetails($this->testUser, $resourceType, $start, $end);
 
         $this->assertIsArray($details);
         $this->assertEquals(100, $details['usage']);
@@ -157,7 +124,6 @@ final class ResourceUsageServiceTest extends TestCase
 
     public function testGetBatchUsageWithMultipleResources(): void
     {
-        $user = $this->createUserStub();
         $resourceTypes = ['resource1', 'resource2', 'nonexistent'];
         $start = new \DateTimeImmutable('-1 day');
         $end = new \DateTimeImmutable();
@@ -207,10 +173,10 @@ final class ResourceUsageServiceTest extends TestCase
             }
         };
 
-        $this->resourceUsageService->addProvider($provider1);
-        $this->resourceUsageService->addProvider($provider2);
+        $this->service->addProvider($provider1);
+        $this->service->addProvider($provider2);
 
-        $result = $this->resourceUsageService->getBatchUsage($user, $resourceTypes, $start, $end);
+        $result = $this->service->getBatchUsage($this->testUser, $resourceTypes, $start, $end);
 
         $this->assertIsArray($result);
         $this->assertEquals(50, $result['resource1']);
@@ -247,14 +213,14 @@ final class ResourceUsageServiceTest extends TestCase
             }
         };
 
-        $this->resourceUsageService->addProvider($testProvider);
+        $this->service->addProvider($testProvider);
 
-        $this->assertTrue($this->resourceUsageService->hasProvider($resourceType));
+        $this->assertTrue($this->service->hasProvider($resourceType));
     }
 
     public function testHasProviderReturnsFalseForUnsupportedResource(): void
     {
-        $this->assertFalse($this->resourceUsageService->hasProvider('nonexistent_resource'));
+        $this->assertFalse($this->service->hasProvider('nonexistent_resource'));
     }
 
     public function testGetSupportedResourceTypesWithProviders(): void
@@ -290,9 +256,9 @@ final class ResourceUsageServiceTest extends TestCase
             }
         };
 
-        $this->resourceUsageService->addProvider($testProvider);
+        $this->service->addProvider($testProvider);
 
-        $types = $this->resourceUsageService->getSupportedResourceTypes();
+        $types = $this->service->getSupportedResourceTypes();
 
         $this->assertIsArray($types);
         $this->assertContains('resource1', $types);
@@ -301,7 +267,7 @@ final class ResourceUsageServiceTest extends TestCase
 
     public function testGetSupportedResourceTypesWithoutProviders(): void
     {
-        $types = $this->resourceUsageService->getSupportedResourceTypes();
+        $types = $this->service->getSupportedResourceTypes();
 
         $this->assertIsArray($types);
         $this->assertEmpty($types);
@@ -309,7 +275,6 @@ final class ResourceUsageServiceTest extends TestCase
 
     public function testProviderPrioritySorting(): void
     {
-        $user = $this->createUserStub();
         $resourceType = 'test_resource';
         $start = new \DateTimeImmutable('-1 day');
         $end = new \DateTimeImmutable();
@@ -360,18 +325,17 @@ final class ResourceUsageServiceTest extends TestCase
             }
         };
 
-        $this->resourceUsageService->addProvider($lowPriorityProvider);
-        $this->resourceUsageService->addProvider($highPriorityProvider);
+        $this->service->addProvider($lowPriorityProvider);
+        $this->service->addProvider($highPriorityProvider);
 
         // 高优先级提供者应该被使用
-        $usage = $this->resourceUsageService->getUsage($user, $resourceType, $start, $end);
+        $usage = $this->service->getUsage($this->testUser, $resourceType, $start, $end);
 
         $this->assertEquals(20, $usage);
     }
 
     public function testAddProviderMaintainsPriorityOrder(): void
     {
-        $user = $this->createUserStub();
         $resourceType = 'test_resource';
         $start = new \DateTimeImmutable('-1 day');
         $end = new \DateTimeImmutable();
@@ -465,12 +429,12 @@ final class ResourceUsageServiceTest extends TestCase
         };
 
         // 按优先级递增顺序添加
-        $this->resourceUsageService->addProvider($provider1);
-        $this->resourceUsageService->addProvider($provider2);
-        $this->resourceUsageService->addProvider($provider3);
+        $this->service->addProvider($provider1);
+        $this->service->addProvider($provider2);
+        $this->service->addProvider($provider3);
 
         // 最高优先级的提供者应该被使用
-        $usage = $this->resourceUsageService->getUsage($user, $resourceType, $start, $end);
+        $usage = $this->service->getUsage($this->testUser, $resourceType, $start, $end);
 
         $this->assertEquals(15, $usage);
     }
