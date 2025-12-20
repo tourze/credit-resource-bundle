@@ -39,7 +39,7 @@
     "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/enum-extra": "1.0.*",
     "tourze/rbac-core": "1.0.*",
-    "tourze/symfony-cron-job-bundle": "1.1.*",
+    "tourze/symfony-cron-job-bundle": "1.2.*",
     "tourze/symfony-dependency-service-loader": "1.0.*",
     "tourze/user-service-contracts": "1.1.*"
   },
